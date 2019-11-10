@@ -494,7 +494,8 @@ checkWhiteVictory(Board, N, Y) :-
 		Temp2 is Y+1,
 		Temp3 is N+2,
 		Temp4 is N+1,
-	%	Temp5 is N-1,
+		Temp5 is N-2,
+		Temp6 is N-1,
 		
 	replaceBoardCell(Board, N, Y, black_c, Result),
 	
@@ -503,17 +504,30 @@ checkWhiteVictory(Board, N, Y) :-
 		nth1(Temp4,Board,CutRow),
 		nth1(Y, CutRow, Square1),
 		nth1(Temp2, CutRow, Square2),
+		
+		nth1(Temp6,Board,CutUpRow),
+		nth1(Y, CutUpRow, Square3),
+		nth1(Temp2, CutUpRow, Square4),
+		(checkBlackVictory(Board, Temp5, Y)->
+			write('no');
 		(checkBlackVictory(Board, N, Temp2)->
 			write('no');
 		(checkBlackVictory(Board, N, Temp1)->
 			write('no');
+		(Square3 = bcut -> 
+		(checkBlackVictory(Board, Temp6, Temp1) -> 
+			write('no');
+			(Square4 = bcut -> 
+				checkBlackVictory(Board, Temp6, Temp2));
+		(Square4 = bcut -> 
+			checkBlackVictory(Board, Temp6, Temp2));
 		(Square1 = bcut -> 
 			(checkBlackVictory(Board, Temp3, Temp1) -> 
 				write('no');
 				(Square2 = bcut -> 
 					checkBlackVictory(Board, Temp3, Temp2)));
 			(Square2 = bcut -> 
-				checkBlackVictory(Board, Temp3, Temp2)))))).
+				checkBlackVictory(Board, Temp3, Temp2))))))))).
 	
 	
 	
@@ -526,7 +540,9 @@ checkWhiteVictory(Board, N, Y) :-
 		Temp2 is Y+1,
 		Temp3 is N+2,
 		Temp4 is N+1,
-	
+		Temp5 is N-2,
+		Temp6 is N-1,
+
 		(Piece = black ->
 		
 		replaceBoardCell(Board, N, Y, black_c, Result),
@@ -535,19 +551,30 @@ checkWhiteVictory(Board, N, Y) :-
 		nth1(Temp4,Board,CutRow),
 		nth1(Y, CutRow, Square1),
 		nth1(Temp2, CutRow, Square2),
-	
+		nth1(Temp6,Board,CutUpRow),
+		nth1(Y, CutUpRow, Square3),
+		nth1(Temp2, CutUpRow, Square4),
+
+		(checkBlackVictory(Board, Temp5, Y)->
+		write('no');
 		(checkBlackVictory(Result, N, Temp2)->
 			write('no');
 		(checkBlackVictory(Result, N, Temp2)->
 			write('no');
-	
+		(Square3 = bcut -> 
+				(checkBlackVictory(Board, Temp6, Temp1) -> 
+					write('no');
+					(Square4 = bcut -> 
+						checkBlackVictory(Board, Temp6, Temp2));
+				(Square4 = bcut -> 
+					checkBlackVictory(Board, Temp6, Temp2));
 		(Square1 = bcut -> 
 			(checkBlackVictory(Result, N, Temp1) -> 
 				write('no');
 				(Square2 = bcut -> 
 					checkBlackVictory(Result, Temp3, Temp2)));
 			(Square2 = bcut -> 
-				checkBlackVictory(Result, Temp3, Temp2)))))); fail).
+				checkBlackVictory(Result, Temp3, Temp2))))))))); fail).
 	
 
 
