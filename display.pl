@@ -43,8 +43,8 @@ initialBoard([
     [bcut,uncut,uncut,uncut,uncut,uncut,uncut,uncut,bcut],
     [blank,blank,blank,blank,white,blank,blank,blank],
     [bcut,uncut,uncut,uncut,uncut,uncut,uncut,uncut,bcut],
-    [blank,blank,blank,blank,white,blank,blank,blank],
-    [bcut,uncut,uncut,uncut,uncut,wcut,uncut,uncut,bcut],
+    [black,black,black,black,black,black,black,blank],
+    [bcut,uncut,uncut,uncut,uncut,uncut,uncut,uncut,bcut],
     [blank,blank,blank,blank,blank,white,white,blank],
     [bcut,uncut,uncut,uncut,uncut,uncut,uncut,wcut,bcut],
     [blank,blank,blank,blank,blank,blank,blank,white],
@@ -93,9 +93,25 @@ startBoard :-
 
 
 playGame :- 
-	midBoard(Board),
+	initialBoard(Board),
+
+	write(' -------------------------'),nl,!,
+	write('|     SQUEX BOARD GAME    |'),nl, !,
+	write(' -------------------------'),nl, nl, nl, !,
+	write('Please insert game mode:'), nl, !,
+	write('0-> Player vs Player'), nl, !,
+	write('1-> Player vs Computer'), nl, !,
+	write('99-> Exit'), nl, !,
+	read(Mode),
+	(Mode is 0->
 	writeBoard(Board),
-	playWhite(Board, 0).
+	playWhite(Board, 0);
+	(Mode is 1->
+	writeBoard(Board),
+	playWhite(Board, 0);
+	(Mode is 99->
+	fail);
+	write('Incorrect option'), nl, !, playGame)).
 
 
 playWhite(T, GotCut) :-
@@ -140,7 +156,22 @@ playBlack(T, GotCut) :-
 		write('Cut = '), write(Cut), nl,
 		writeBoard(Result2),
 		(checkBlackVictory(Result2, 2)->
-		write('Black wins!!'), fail; write('ok')),
+		write('Black wins!!'), fail; 
+		(checkBlackVictory(Result2, 4)->
+		write('Black wins!!'), fail;
+		(checkBlackVictory(Result2, 6)->
+		write('Black wins!!'), fail;
+		(checkBlackVictory(Result2, 8)->
+		write('Black wins!!'), fail;
+		(checkBlackVictory(Result2, 10)->
+		write('Black wins!!'), fail;
+		(checkBlackVictory(Result2, 12)->
+		write('Black wins!!'), fail;
+		(checkBlackVictory(Result2, 14)->
+		write('Black wins!!'), fail;
+		(checkBlackVictory(Result2, 16)->
+		write('Black wins!!'), fail;
+		write('ok'))))))))),
 		(Cut = 0 -> (GotCut = 1 ->
 					write('Black Player Turn ...'), nl, !,
 					write('Row = '), read(R2), 
@@ -160,6 +191,36 @@ playBlack(T, GotCut) :-
 		writeBoard(T),
 		playBlack(T, GotCut)).
 
+playWhiteBot(T, GotCut) :-
+	write('White Player Turn ...'), nl, !,
+	random(1, 8, R1),
+	random(1, 8, C1),
+	TempR1 is R1*2,
+	(isCellEmpty(T,TempR1,C1)->
+		replaceBoardCell(T,TempR1,C1,white,Result1),
+		checkSquare(Result1, TempR1, C1, white, Result2, Cut),
+		write('Cut = '), write(Cut), nl,
+		writeBoard(Result2),
+		(checkWhiteVictory(Result2, 2)->
+			write('White wins!!'), fail; write('ok')),
+		(Cut = 0 -> (GotCut = 1 ->
+				write('White Player Turn ...'), nl, !,
+				random(1, 8, R2),
+				random(1, 8, C2),
+				TempR2 is R2*2,
+				isCellEmpty(Result2,TempR2,C2),
+				replaceBoardCell(Result2,TempR2,C2,white,Result3),
+				checkSquare(Result3, TempR2, C2, white, Result4, Cut),
+				write('Cut = '), write(Cut), nl,
+				writeBoard(Result4),
+				playBlack(Result4, Cut);
+
+				playBlack(Result2, Cut)
+			);
+		playBlack(Result2, Cut));
+		write('Cell is not empty. Try again w/ empty cell'), nl,
+		writeBoard(T),
+		playWhiteBot(T, GotCut)).
 
 
 
