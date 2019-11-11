@@ -1,6 +1,6 @@
 :-use_module(library(lists)).
 # :- consult('D:/Users/Joao/Desktop/Curso/PLOG/Projeto_1/player.pl').
-   
+   :- use_module(library(random)).
 symbol(blank, X):- X = ' '.
 symbol(black, X):- X = 'B'.
 symbol(white, X):- X = 'W'.
@@ -105,19 +105,22 @@ playGame :-
 	read(Mode),
 	(Mode is 0->
 	writeBoard(Board),
-	playWhite(Board, 0);
+	playWhite(Board, 0, 0);
 	(Mode is 1->
 	writeBoard(Board),
-	playWhite(Board, 0);
+	playWhite(Board, 0, 1);
 	(Mode is 99->
 	fail);
 	write('Incorrect option'), nl, !, playGame)).
 
 
-playWhite(T, GotCut) :-
+playWhite(T, GotCut, Bot) :-
 	write('White Player Turn ...'), nl, !,
-	write('Row = '), read(R1), 
-	write('Column = '), read(C1),
+	(Bot is 0 ->
+		write('Row = '), read(R1), 
+		write('Column = '), read(C1);
+		random(1, 8, R1),
+		random(1, 8, C1)),
 	TempR1 is R1*2,
 	(isCellEmpty(T,TempR1,C1)->
 		replaceBoardCell(T,TempR1,C1,white,Result1),
@@ -128,24 +131,27 @@ playWhite(T, GotCut) :-
 			write('White wins!!'), fail; write('ok')),
 		(Cut = 0 -> (GotCut = 1 ->
 				write('White Player Turn ...'), nl, !,
+				(Bot is 0 ->
 				write('Row = '), read(R2), 
-				write('Column = '), read(C2),
+				write('Column = '), read(C2);
+				random(1, 8, R2),
+				random(1, 8, C2)),
 				TempR2 is R2*2,
 				isCellEmpty(Result2,TempR2,C2),
 				replaceBoardCell(Result2,TempR2,C2,white,Result3),
 				checkSquare(Result3, TempR2, C2, white, Result4, Cut),
 				write('Cut = '), write(Cut), nl,
 				writeBoard(Result4),
-				playBlack(Result4, Cut);
+				playBlack(Result4, Cut, Bot);
 
-				playBlack(Result2, Cut)
+				playBlack(Result2, Cut, Bot)
 			);
 		playBlack(Result2, Cut));
 		write('Cell is not empty. Try again w/ empty cell'), nl,
 		writeBoard(T),
 		playWhite(T, GotCut)).
 	
-playBlack(T, GotCut) :-
+playBlack(T, GotCut, Bot) :-
 	write('Black Player Turn ...'), nl, !,
 	write('Row = '), read(R1), 
 	write('Column = '), read(C1),
@@ -182,9 +188,13 @@ playBlack(T, GotCut) :-
 					checkSquare(Result3, TempR2, C2, black, Result4, Cut),
 					write('Cut = '), write(Cut), nl,
 					writeBoard(Result4),
-					playWhite(Result4, Cut);
+					(Bot is 0->
+						playWhite(Result4, Cut, 0);
+						playWhite(Result4, Cut, 1));
 
-					playWhite(Result2, Cut)
+					(Bot is 0->
+						playWhite(Result4, Cut, 0);
+						playWhite(Result4, Cut, 1))
 			);
 			playWhite(Result2, Cut));
 		write('Cell is not empty. Try again w/ empty cell'), nl,
