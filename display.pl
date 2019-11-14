@@ -113,14 +113,13 @@ playGame :-
 	fail);
 	write('Incorrect option'), nl, !, playGame)).
 
-
-playWhite(T, GotCut, Bot) :-
+playWhite(T, GotCut, Computer) :-
 	write('White Player Turn ...'), nl, !,
-	(Bot is 0 ->
-		write('Row = '), read(R1), 
-		write('Column = '), read(C1);
-		random(1, 8, R1),
-		random(1, 8, C1)),
+	(Computer is 0 -> 
+	write('Row = '), read(R1), 
+	write('Column = '), read(C1);
+	random(1, 8, R1),
+	random(1, 8, C1)),
 	TempR1 is R1*2,
 	(isCellEmpty(T,TempR1,C1)->
 		replaceBoardCell(T,TempR1,C1,white,Result1),
@@ -131,30 +130,33 @@ playWhite(T, GotCut, Bot) :-
 			write('White wins!!'), fail; write('ok')),
 		(Cut = 0 -> (GotCut = 1 ->
 				write('White Player Turn ...'), nl, !,
-				(Bot is 0 ->
-				write('Row = '), read(R2), 
-				write('Column = '), read(C2);
-				random(1, 8, R2),
-				random(1, 8, C2)),
+				(Computer is 0 -> 
+					write('Row = '), read(R2), 
+					write('Column = '), read(C2);
+					random(1, 8, R2),
+					random(1, 8, C2)),
 				TempR2 is R2*2,
 				isCellEmpty(Result2,TempR2,C2),
 				replaceBoardCell(Result2,TempR2,C2,white,Result3),
 				checkSquare(Result3, TempR2, C2, white, Result4, Cut),
 				write('Cut = '), write(Cut), nl,
 				writeBoard(Result4),
-				playBlack(Result4, Cut, Bot);
+				playBlack(Result4, Cut, Computer);
 
-				playBlack(Result2, Cut, Bot)
+				playBlack(Result2, Cut, Computer)
 			);
-		playBlack(Result2, Cut));
+		playBlack(Result2, Cut, Computer));
 		write('Cell is not empty. Try again w/ empty cell'), nl,
 		writeBoard(T),
-		playWhite(T, GotCut)).
+		playWhite(T, GotCut, Computer)).
 	
-playBlack(T, GotCut, Bot) :-
+playBlack(T, GotCut, Computer) :-
 	write('Black Player Turn ...'), nl, !,
+	%(Computer is 0 -> 
 	write('Row = '), read(R1), 
 	write('Column = '), read(C1),
+	%random(1, 8, R1),
+	%random(1, 8, C1)),
 	TempR1 is R1*2,
 	(isCellEmpty(T,TempR1,C1)->
 		replaceBoardCell(T,TempR1,C1,black,Result1),
@@ -180,27 +182,27 @@ playBlack(T, GotCut, Bot) :-
 		write('ok'))))))))),
 		(Cut = 0 -> (GotCut = 1 ->
 					write('Black Player Turn ...'), nl, !,
+					%(Computer is 0 -> 
 					write('Row = '), read(R2), 
 					write('Column = '), read(C2),
+					%random(1, 8, R2),
+					%random(1, 8, C2)),
 					TempR2 is R2*2,
 					isCellEmpty(Result2,TempR2,C2),
 					replaceBoardCell(Result2,TempR2,C2,black,Result3),
 					checkSquare(Result3, TempR2, C2, black, Result4, Cut),
 					write('Cut = '), write(Cut), nl,
 					writeBoard(Result4),
-					(Bot is 0->
-						playWhite(Result4, Cut, 0);
-						playWhite(Result4, Cut, 1));
+					playWhite(Result4, Cut, Computer);
 
-					(Bot is 0->
-						playWhite(Result4, Cut, 0);
-						playWhite(Result4, Cut, 1))
+					playWhite(Result2, Cut, Computer)
 			);
-			playWhite(Result2, Cut));
+			playWhite(Result2, Cut, Computer));
 		write('Cell is not empty. Try again w/ empty cell'), nl,
 		writeBoard(T),
-		playBlack(T, GotCut)).
+		playBlack(T, GotCut, Computer)).
 
+/*
 playWhiteBot(T, GotCut) :-
 	write('White Player Turn ...'), nl, !,
 	random(1, 8, R1),
@@ -232,7 +234,7 @@ playWhiteBot(T, GotCut) :-
 		writeBoard(T),
 		playWhiteBot(T, GotCut)).
 
-
+*/
 
 % checks if position is empty %
 
