@@ -93,7 +93,7 @@ startBoard :-
 
 
 playGame :- 
-	initialBoard(Board),
+	midBoard(Board),
 
 	write(' -------------------------'),nl,!,
 	write('|     SQUEX BOARD GAME    |'),nl, !,
@@ -101,6 +101,8 @@ playGame :-
 	write('Please insert game mode:'), nl, !,
 	write('0-> Player vs Player'), nl, !,
 	write('1-> Player vs Computer'), nl, !,
+	write('2-> Computer vs Player'), nl, !,
+	write('3-> Computer vs Computer'), nl, !,
 	write('99-> Exit'), nl, !,
 	read(Mode),
 	(Mode is 0->
@@ -109,17 +111,26 @@ playGame :-
 	(Mode is 1->
 	writeBoard(Board),
 	playWhite(Board, 0, 1);
+	(Mode is 2->
+	writeBoard(Board),
+	playWhite(Board, 0, 2);
+	(Mode is 3->
+	writeBoard(Board),
+	playWhite(Board, 0, 3);
 	(Mode is 99->
 	fail);
-	write('Incorrect option'), nl, !, playGame)).
+	write('Incorrect option'), nl, !, playGame)))).
 
 playWhite(T, GotCut, Computer) :-
 	write('White Player Turn ...'), nl, !,
-	(Computer is 0 -> 
+	(Computer is 1 -> 
+		random(1, 9, R1),
+		random(1, 9, C1);
+	(Computer is 3 -> 
+		random(1, 9, R1),
+		random(1, 9, C1);
 	write('Row = '), read(R1), 
-	write('Column = '), read(C1);
-	random(1, 8, R1),
-	random(1, 8, C1)),
+	write('Column = '), read(C1))),
 	TempR1 is R1*2,
 	(isCellEmpty(T,TempR1,C1)->
 		replaceBoardCell(T,TempR1,C1,white,Result1),
@@ -130,11 +141,14 @@ playWhite(T, GotCut, Computer) :-
 			write('White wins!!'), fail; write('ok')),
 		(Cut = 0 -> (GotCut = 1 ->
 				write('White Player Turn ...'), nl, !,
-				(Computer is 0 -> 
+				(Computer is 1 -> 
+					random(1, 9, R2),
+					random(1, 9, C2);
+					(Computer is 3 -> 
+					random(1, 9, R2),
+					random(1, 9, C2);
 					write('Row = '), read(R2), 
-					write('Column = '), read(C2);
-					random(1, 8, R2),
-					random(1, 8, C2)),
+					write('Column = '), read(C2))),
 				TempR2 is R2*2,
 				isCellEmpty(Result2,TempR2,C2),
 				replaceBoardCell(Result2,TempR2,C2,white,Result3),
@@ -152,11 +166,14 @@ playWhite(T, GotCut, Computer) :-
 	
 playBlack(T, GotCut, Computer) :-
 	write('Black Player Turn ...'), nl, !,
-	%(Computer is 0 -> 
+	(Computer is 2 -> 
+	random(1, 9, R1),
+	random(1, 9, C1);
+	(Computer is 3 -> 
+		random(1, 9, R1),
+		random(1, 9, C1);
 	write('Row = '), read(R1), 
-	write('Column = '), read(C1),
-	%random(1, 8, R1),
-	%random(1, 8, C1)),
+	write('Column = '), read(C1))),
 	TempR1 is R1*2,
 	(isCellEmpty(T,TempR1,C1)->
 		replaceBoardCell(T,TempR1,C1,black,Result1),
@@ -182,11 +199,14 @@ playBlack(T, GotCut, Computer) :-
 		write('ok'))))))))),
 		(Cut = 0 -> (GotCut = 1 ->
 					write('Black Player Turn ...'), nl, !,
-					%(Computer is 0 -> 
+					(Computer is 2 -> 
+					random(1, 9, R2),
+					random(1, 9, C2);
+					(Computer is 3 -> 
+					random(1, 9, R2),
+					random(1, 9, C2);
 					write('Row = '), read(R2), 
-					write('Column = '), read(C2),
-					%random(1, 8, R2),
-					%random(1, 8, C2)),
+					write('Column = '), read(C2))),
 					TempR2 is R2*2,
 					isCellEmpty(Result2,TempR2,C2),
 					replaceBoardCell(Result2,TempR2,C2,black,Result3),
@@ -202,39 +222,7 @@ playBlack(T, GotCut, Computer) :-
 		writeBoard(T),
 		playBlack(T, GotCut, Computer)).
 
-/*
-playWhiteBot(T, GotCut) :-
-	write('White Player Turn ...'), nl, !,
-	random(1, 8, R1),
-	random(1, 8, C1),
-	TempR1 is R1*2,
-	(isCellEmpty(T,TempR1,C1)->
-		replaceBoardCell(T,TempR1,C1,white,Result1),
-		checkSquare(Result1, TempR1, C1, white, Result2, Cut),
-		write('Cut = '), write(Cut), nl,
-		writeBoard(Result2),
-		(checkWhiteVictory(Result2, 2)->
-			write('White wins!!'), fail; write('ok')),
-		(Cut = 0 -> (GotCut = 1 ->
-				write('White Player Turn ...'), nl, !,
-				random(1, 8, R2),
-				random(1, 8, C2),
-				TempR2 is R2*2,
-				isCellEmpty(Result2,TempR2,C2),
-				replaceBoardCell(Result2,TempR2,C2,white,Result3),
-				checkSquare(Result3, TempR2, C2, white, Result4, Cut),
-				write('Cut = '), write(Cut), nl,
-				writeBoard(Result4),
-				playBlack(Result4, Cut);
 
-				playBlack(Result2, Cut)
-			);
-		playBlack(Result2, Cut));
-		write('Cell is not empty. Try again w/ empty cell'), nl,
-		writeBoard(T),
-		playWhiteBot(T, GotCut)).
-
-*/
 
 % checks if position is empty %
 
@@ -558,50 +546,38 @@ checkWhiteVictory(Board, N, Y) :-
 
 
 		
-	checkBlackVictory(_, _, 9).
+	checkBlackVictory(_, _, 10).
 	checkBlackVictory(Board, N) :-
+
+		% transpose(Board, Board1),
+		
 		nth1(N,Board,Row),
-		nth1(Y, Row, black),
+	nth1(Y, Row, black),
+
+	Temp1 is Y-1,
+	Temp2 is Y+1,
+	Temp3 is N+2,
+	Temp4 is N+1,
+%	Temp5 is N-1,
 	
-		Temp1 is Y-1,
-		Temp2 is Y+1,
-		Temp3 is N+2,
-		Temp4 is N+1,
-		Temp5 is N-2,
-		Temp6 is N-1,
-		
-	replaceBoardCell(Board, N, Y, black_c, Result),
-	
-		(checkBlackVictory(Board, Temp3, Y)->
+replaceBoardCell(Board, N, Y, black_c, Result),
+
+	(checkBlackVictory(Board, Temp3, Y)->
+	write('no');
+	nth1(Temp4,Board,CutRow),
+	nth1(Y, CutRow, Square1),
+	nth1(Temp2, CutRow, Square2),
+	(checkBlackVictory(Board, N, Temp2)->
 		write('no');
-		nth1(Temp4,Board,CutRow),
-		nth1(Y, CutRow, Square1),
-		nth1(Temp2, CutRow, Square2),
-		
-		nth1(Temp6,Board,CutUpRow),
-		nth1(Y, CutUpRow, Square3),
-		nth1(Temp2, CutUpRow, Square4),
-		(checkBlackVictory(Board, Temp5, Y)->
+	(checkBlackVictory(Board, N, Temp1)->
+		write('no');
+	(Square1 = bcut -> 
+		(checkBlackVictory(Board, Temp3, Temp1) -> 
 			write('no');
-		(checkBlackVictory(Board, N, Temp2)->
-			write('no');
-		(checkBlackVictory(Board, N, Temp1)->
-			write('no');
-					(Square3 = bcut -> 
-		(checkBlackVictory(Board, Temp6, Temp1) -> 
-			write('no');
-			(Square4 = bcut -> 
-				checkBlackVictory(Board, Temp6, Temp2)));
-		(Square4 = bcut -> 
-			checkBlackVictory(Board, Temp6, Temp2)));
-		(Square1 = bcut -> 
-			(checkBlackVictory(Board, Temp3, Temp1) -> 
-				write('no');
-				(Square2 = bcut -> 
-					checkBlackVictory(Board, Temp3, Temp2)));
 			(Square2 = bcut -> 
-				checkBlackVictory(Board, Temp3, Temp2))))))).
-	
+				checkBlackVictory(Board, Temp3, Temp2)));
+		(Square2 = bcut -> 
+			checkBlackVictory(Board, Temp3, Temp2)))))).
 	
 	
 	checkBlackVictory(Board, N, Y) :-
@@ -613,9 +589,7 @@ checkWhiteVictory(Board, N, Y) :-
 		Temp2 is Y+1,
 		Temp3 is N+2,
 		Temp4 is N+1,
-		Temp5 is N-2,
-		Temp6 is N-1,
-
+	
 		(Piece = black ->
 		
 		replaceBoardCell(Board, N, Y, black_c, Result),
@@ -624,31 +598,19 @@ checkWhiteVictory(Board, N, Y) :-
 		nth1(Temp4,Board,CutRow),
 		nth1(Y, CutRow, Square1),
 		nth1(Temp2, CutRow, Square2),
-		nth1(Temp6,Board,CutUpRow),
-		nth1(Y, CutUpRow, Square3),
-		nth1(Temp2, CutUpRow, Square4),
-
-		(checkBlackVictory(Board, Temp5, Y)->
-		write('no');
+	
 		(checkBlackVictory(Result, N, Temp2)->
 			write('no');
-		(checkBlackVictory(Result, N, Temp2)->
+		(checkBlackVictory(Result, N, Temp1)->
 			write('no');
-				(Square3 = bcut -> 
-		(checkBlackVictory(Board, Temp6, Temp1) -> 
-			write('no');
-			(Square4 = bcut -> 
-				checkBlackVictory(Board, Temp6, Temp2)));
-		(Square4 = bcut -> 
-			checkBlackVictory(Board, Temp6, Temp2)));
+	
 		(Square1 = bcut -> 
-			(checkBlackVictory(Result, N, Temp1) -> 
+			(checkBlackVictory(Result, Temp3, Temp1) -> 
 				write('no');
 				(Square2 = bcut -> 
 					checkBlackVictory(Result, Temp3, Temp2)));
 			(Square2 = bcut -> 
-				checkBlackVictory(Result, Temp3, Temp2))))))); fail).
-	
+				checkBlackVictory(Result, Temp3, Temp2)))))); fail).
 
 
 
