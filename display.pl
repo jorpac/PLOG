@@ -183,19 +183,19 @@ playBlack(T, GotCut, Computer) :-
 		(checkBlackVictory(Result2, 2)->
 		write('Black wins!!'), fail; 
 		(checkBlackVictory(Result2, 4)->
-		write('Black wins!!'), fail;
+		write('Black wins!!'), fail; 
 		(checkBlackVictory(Result2, 6)->
-		write('Black wins!!'), fail;
+		write('Black wins!!'), fail; 
 		(checkBlackVictory(Result2, 8)->
-		write('Black wins!!'), fail;
+		write('Black wins!!'), fail; 
 		(checkBlackVictory(Result2, 10)->
-		write('Black wins!!'), fail;
+		write('Black wins!!'), fail; 
 		(checkBlackVictory(Result2, 12)->
-		write('Black wins!!'), fail;
+		write('Black wins!!'), fail; 
 		(checkBlackVictory(Result2, 14)->
-		write('Black wins!!'), fail;
+		write('Black wins!!'), fail; 
 		(checkBlackVictory(Result2, 16)->
-		write('Black wins!!'), fail;
+		write('Black wins!!'), fail; 
 		write('ok'))))))))),
 		(Cut = 0 -> (GotCut = 1 ->
 					write('Black Player Turn ...'), nl, !,
@@ -546,71 +546,79 @@ checkWhiteVictory(Board, N, Y) :-
 
 
 		
-	checkBlackVictory(_, _, 10).
-	checkBlackVictory(Board, N) :-
+ checkBlackVictory(_, _, 9).
+
+checkBlackVictory(_, 16):- fail.
+checkBlackVictory(Board, N) :-
 
 		% transpose(Board, Board1),
 		
-		nth1(N,Board,Row),
+	nth1(N,Board,Row),
 	nth1(Y, Row, black),
+	(Y is 1->
+	% Temp1 is Y-1,
+	Temp2 is Y+1,
+	Temp3 is N+2,
+	Temp4 is N+1,
+	Temp5 is N-1,
+	Temp6 is N-2,
+	
+	replaceBoardCell(Board, N, Y, black_c, Result),
 
+	(checkBlackVictory(Board, N, Temp2)->
+	write('no');
+	(checkBlackVictory(Board, Temp3, Y)->
+	write('no');
+	(checkBlackVictory(Board, Temp6, Y)->
+	write('no');
+	nth1(Temp4,Board,CutRow),
+	nth1(Temp2, CutRow, Square1),
+	nth1(Temp5,Board,CutRow),
+	nth1(Temp2, CutRow, Square2),
+	(Square1 = bcut -> 
+		(checkBlackVictory(Board, Temp3, Temp2) -> 
+			write('no');
+			(Square2 = bcut -> 
+				checkBlackVictory(Board, Temp6, Temp2)));
+		(Square2 = bcut -> 
+			checkBlackVictory(Board, Temp6, Temp2)))))); fail).
+	
+	
+checkBlackVictory(Board, N, Y) :-
+		
+	nth1(N,Board,Row),
+	nth1(Y, Row, Piece),
 	Temp1 is Y-1,
 	Temp2 is Y+1,
 	Temp3 is N+2,
 	Temp4 is N+1,
-%	Temp5 is N-1,
+	Temp5 is N-1,
+	Temp6 is N-2,
 	
-replaceBoardCell(Board, N, Y, black_c, Result),
-
-	(checkBlackVictory(Board, Temp3, Y)->
+	(Piece = black ->
+		% (Y is 8	-> true;
+	
+	replaceBoardCell(Board, N, Y, black_c, Result),
+	(checkBlackVictory(Result, N, Temp2)->
 	write('no');
 	nth1(Temp4,Board,CutRow),
-	nth1(Y, CutRow, Square1),
+	nth1(Temp2, CutRow, Square1),
+	nth1(Temp5,Board,CutRow),		
 	nth1(Temp2, CutRow, Square2),
-	(checkBlackVictory(Board, N, Temp2)->
+	
+	% (checkBlackVictory(Result, Temp3, Y)->
+		% 	write('no');
+		(checkBlackVictory(Board, Temp3, Y)->
 		write('no');
-	(checkBlackVictory(Board, N, Temp1)->
+		(checkBlackVictory(Board, Temp6, Y)->
 		write('no');
 	(Square1 = bcut -> 
-		(checkBlackVictory(Board, Temp3, Temp1) -> 
+		(checkBlackVictory(Result, Temp3, Temp2) -> 
 			write('no');
 			(Square2 = bcut -> 
-				checkBlackVictory(Board, Temp3, Temp2)));
+				checkBlackVictory(Result, Temp6, Temp2)));
 		(Square2 = bcut -> 
-			checkBlackVictory(Board, Temp3, Temp2)))))).
-	
-	
-	checkBlackVictory(Board, N, Y) :-
-		
-		nth1(N,Board,Row),
-		nth1(Y, Row, Piece),
-	
-		Temp1 is Y-1,
-		Temp2 is Y+1,
-		Temp3 is N+2,
-		Temp4 is N+1,
-	
-		(Piece = black ->
-		
-		replaceBoardCell(Board, N, Y, black_c, Result),
-		(checkBlackVictory(Result, Temp3, Y)->
-		write('no');
-		nth1(Temp4,Board,CutRow),
-		nth1(Y, CutRow, Square1),
-		nth1(Temp2, CutRow, Square2),
-	
-		(checkBlackVictory(Result, N, Temp2)->
-			write('no');
-		(checkBlackVictory(Result, N, Temp1)->
-			write('no');
-	
-		(Square1 = bcut -> 
-			(checkBlackVictory(Result, Temp3, Temp1) -> 
-				write('no');
-				(Square2 = bcut -> 
-					checkBlackVictory(Result, Temp3, Temp2)));
-			(Square2 = bcut -> 
-				checkBlackVictory(Result, Temp3, Temp2)))))); fail).
+			checkBlackVictory(Result, Temp6, Temp2)))))); fail).
 
 
 
