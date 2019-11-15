@@ -565,24 +565,24 @@ checkBlackVictory(Board, N) :-
 	
 	replaceBoardCell(Board, N, Y, black_c, Result),
 
-	(checkBlackVictory(Board, N, Temp2)->
+	(checkBlackVictory(Result, N, Temp2)->
 	write('no');
 	nth1(Temp4,Board,CutRow),
 	nth1(Temp2, CutRow, Square1),
-	nth1(Temp5,Board,CutRow),
-	nth1(Temp2, CutRow, Square2),
-	(checkBlackVictory(Board, Temp3, Y)->
-	write('no');
-	(checkBlackVictory(Board, Temp6, Y)->
-	write('no');
+	nth1(Temp5,Board,CutUpRow),
+	nth1(Temp2, CutUpRow, Square2),
 	
-	(Square1 = bcut -> 
-		(checkBlackVictory(Board, Temp3, Temp2) -> 
+	(Square2 = bcut -> 
+		(checkBlackVictory(Result, Temp3, Temp2) -> 
 			write('no');
-			(Square2 = bcut -> 
-				checkBlackVictory(Board, Temp6, Temp2)));
-		(Square2 = bcut -> 
-			checkBlackVictory(Board, Temp6, Temp2)))))).
+			(Square1 = bcut -> 
+				checkBlackVictory(Result, Temp6, Temp2)));
+		(Square1 = bcut -> 
+			checkBlackVictory(Result, Temp6, Temp2);
+	(checkBlackVictory(Result, Temp3, Y)->
+	write('no');
+	(checkBlackVictory(Result, Temp6, Y)->
+	write('no')))))).
 	
 	
 checkBlackVictory(Board, N, Y) :-
@@ -602,10 +602,10 @@ checkBlackVictory(Board, N, Y) :-
 	replaceBoardCell(Board, N, Y, black_c, Result),
 	(checkBlackVictory(Result, N, Temp2)->
 	write('no');
-	nth1(Temp4,Board,CutRow),
+	nth1(Temp4, Board, CutRow),
 	nth1(Temp2, CutRow, Square1),
-	nth1(Temp5,Board,CutRow),		
-	nth1(Temp2, CutRow, Square2),
+	nth1(Temp5, Board, CutUpRow),		
+	nth1(Temp2, CutUpRow, Square2),
 	
 	% (checkBlackVictory(Result, Temp3, Y)->
 		% 	write('no');
@@ -617,9 +617,9 @@ checkBlackVictory(Board, N, Y) :-
 				checkBlackVictory(Result, Temp6, Temp2)));
 		(Square2 = bcut -> 
 			checkBlackVictory(Result, Temp6, Temp2);
-		(checkBlackVictory(Board, Temp3, Y)->
+		(checkBlackVictory(Result, Temp3, Y)->
 		write('no');
-		(checkBlackVictory(Board, Temp6, Y)->
+		(checkBlackVictory(Result, Temp6, Y)->
 		write('no'))))))).
 
 
