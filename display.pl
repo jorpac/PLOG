@@ -546,16 +546,16 @@ checkWhiteVictory(Board, N, Y) :-
 
 
 		
- checkBlackVictory(_, _, 9).
+%  checkBlackVictory(_, _, 9).
 
-checkBlackVictory(_, 16):- fail.
+% checkBlackVictory(_, 16):- fail.
 checkBlackVictory(Board, N) :-
 
 		% transpose(Board, Board1),
 		
 	nth1(N,Board,Row),
 	nth1(Y, Row, black),
-	(Y is 1->
+	(Y = 1->
 	% Temp1 is Y-1,
 	Temp2 is Y+1,
 	Temp3 is N+2,
@@ -567,14 +567,15 @@ checkBlackVictory(Board, N) :-
 
 	(checkBlackVictory(Board, N, Temp2)->
 	write('no');
-	(checkBlackVictory(Board, Temp3, Y)->
-	write('no');
-	(checkBlackVictory(Board, Temp6, Y)->
-	write('no');
 	nth1(Temp4,Board,CutRow),
 	nth1(Temp2, CutRow, Square1),
 	nth1(Temp5,Board,CutRow),
 	nth1(Temp2, CutRow, Square2),
+	(checkBlackVictory(Board, Temp3, Y)->
+	write('no');
+	(checkBlackVictory(Board, Temp6, Y)->
+	write('no');
+	
 	(Square1 = bcut -> 
 		(checkBlackVictory(Board, Temp3, Temp2) -> 
 			write('no');
@@ -596,7 +597,7 @@ checkBlackVictory(Board, N, Y) :-
 	Temp6 is N-2,
 	
 	(Piece = black ->
-		% (Y is 8	-> true;
+		 (Y = 8	-> true;
 	
 	replaceBoardCell(Board, N, Y, black_c, Result),
 	(checkBlackVictory(Result, N, Temp2)->
@@ -618,7 +619,7 @@ checkBlackVictory(Board, N, Y) :-
 			(Square2 = bcut -> 
 				checkBlackVictory(Result, Temp6, Temp2)));
 		(Square2 = bcut -> 
-			checkBlackVictory(Result, Temp6, Temp2)))))); fail).
+			checkBlackVictory(Result, Temp6, Temp2)))))); fail)).
 
 
 
