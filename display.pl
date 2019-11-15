@@ -33,7 +33,7 @@ initialBoard([
 
 	midBoard([
     [corner,wcut,wcut,wcut,wcut,wcut,wcut,wcut,corner],
-    [black,black,black,black,black,black,black,blank],
+    [blank,black,black,black,black,black,black,black],
     [bcut,uncut,uncut,uncut,uncut,uncut,uncut,uncut,bcut],
     [blank,blank,blank,blank,white,blank,blank,blank],
     [bcut,uncut,uncut,uncut,uncut,uncut,uncut,uncut,bcut],
@@ -596,8 +596,8 @@ checkBlackVictory(Board, N, Y) :-
 	Temp5 is N-1,
 	Temp6 is N-2,
 	
-	(Piece = black ->
-		 (Y = 8	-> true;
+	Piece = black,
+	(Y = 8-> true;
 	
 	replaceBoardCell(Board, N, Y, black_c, Result),
 	(checkBlackVictory(Result, N, Temp2)->
@@ -609,17 +609,18 @@ checkBlackVictory(Board, N, Y) :-
 	
 	% (checkBlackVictory(Result, Temp3, Y)->
 		% 	write('no');
-		(checkBlackVictory(Board, Temp3, Y)->
-		write('no');
-		(checkBlackVictory(Board, Temp6, Y)->
-		write('no');
+		
 	(Square1 = bcut -> 
 		(checkBlackVictory(Result, Temp3, Temp2) -> 
 			write('no');
 			(Square2 = bcut -> 
 				checkBlackVictory(Result, Temp6, Temp2)));
 		(Square2 = bcut -> 
-			checkBlackVictory(Result, Temp6, Temp2)))))); fail)).
+			checkBlackVictory(Result, Temp6, Temp2);
+		(checkBlackVictory(Board, Temp3, Y)->
+		write('no');
+		(checkBlackVictory(Board, Temp6, Y)->
+		write('no'))))))).
 
 
 
