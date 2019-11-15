@@ -93,7 +93,7 @@ startBoard :-
 
 
 playGame :- 
-	midBoard(Board),
+	initialBoard(Board),
 
 	write(' -------------------------'),nl,!,
 	write('|     SQUEX BOARD GAME    |'),nl, !,
@@ -105,28 +105,28 @@ playGame :-
 	write('3-> Computer vs Computer'), nl, !,
 	write('99-> Exit'), nl, !,
 	read(Mode),
-	(Mode is 0->
+	(Mode =:= 0->
 	writeBoard(Board),
 	playWhite(Board, 0, 0);
-	(Mode is 1->
+	(Mode =:= 1->
 	writeBoard(Board),
 	playWhite(Board, 0, 1);
-	(Mode is 2->
+	(Mode =:= 2->
 	writeBoard(Board),
 	playWhite(Board, 0, 2);
-	(Mode is 3->
+	(Mode =:= 3->
 	writeBoard(Board),
 	playWhite(Board, 0, 3);
-	(Mode is 99->
+	(Mode =:= 99->
 	fail);
 	write('Incorrect option'), nl, !, playGame)))).
 
 playWhite(T, GotCut, Computer) :-
 	write('White Player Turn ...'), nl, !,
-	(Computer is 1 -> 
+	(Computer =:= 1 -> 
 		random(1, 9, R1),
 		random(1, 9, C1);
-	(Computer is 3 -> 
+	(Computer =:= 3 -> 
 		random(1, 9, R1),
 		random(1, 9, C1);
 	write('Row = '), read(R1), 
@@ -139,12 +139,12 @@ playWhite(T, GotCut, Computer) :-
 		writeBoard(Result2),
 		(checkWhiteVictory(Result2, 2)->
 			write('White wins!!'), fail; write('ok')),
-		(Cut = 0 -> (GotCut = 1 ->
+		(Cut =:= 0 -> (GotCut =:= 1 ->
 				write('White Player Turn ...'), nl, !,
-				(Computer is 1 -> 
+				(Computer =:= 1 -> 
 					random(1, 9, R2),
 					random(1, 9, C2);
-					(Computer is 3 -> 
+					(Computer =:= 3 -> 
 					random(1, 9, R2),
 					random(1, 9, C2);
 					write('Row = '), read(R2), 
@@ -166,10 +166,10 @@ playWhite(T, GotCut, Computer) :-
 	
 playBlack(T, GotCut, Computer) :-
 	write('Black Player Turn ...'), nl, !,
-	(Computer is 2 -> 
+	(Computer =:= 2 -> 
 	random(1, 9, R1),
 	random(1, 9, C1);
-	(Computer is 3 -> 
+	(Computer =:= 3 -> 
 		random(1, 9, R1),
 		random(1, 9, C1);
 	write('Row = '), read(R1), 
@@ -197,12 +197,12 @@ playBlack(T, GotCut, Computer) :-
 		(checkBlackVictory(Result2, 16)->
 		write('Black wins!!'), fail; 
 		write('ok'))))))))),
-		(Cut = 0 -> (GotCut = 1 ->
+		(Cut =:= 0 -> (GotCut =:= 1 ->
 					write('Black Player Turn ...'), nl, !,
-					(Computer is 2 -> 
+					(Computer =:= 2 -> 
 					random(1, 9, R2),
 					random(1, 9, C2);
-					(Computer is 3 -> 
+					(Computer =:= 3 -> 
 					random(1, 9, R2),
 					random(1, 9, C2);
 					write('Row = '), read(R2), 
