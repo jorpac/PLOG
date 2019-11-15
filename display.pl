@@ -555,7 +555,7 @@ checkBlackVictory(Board, N) :-
 		
 	nth1(N,Board,Row),
 	nth1(Y, Row, black),
-	(Y = 1->
+	Y = 1,
 	% Temp1 is Y-1,
 	Temp2 is Y+1,
 	Temp3 is N+2,
@@ -582,7 +582,7 @@ checkBlackVictory(Board, N) :-
 			(Square2 = bcut -> 
 				checkBlackVictory(Board, Temp6, Temp2)));
 		(Square2 = bcut -> 
-			checkBlackVictory(Board, Temp6, Temp2)))))); fail).
+			checkBlackVictory(Board, Temp6, Temp2)))))).
 	
 	
 checkBlackVictory(Board, N, Y) :-
