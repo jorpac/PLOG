@@ -1,6 +1,6 @@
-:-use_module(library(lists)).
-# :- consult('D:/Users/Joao/Desktop/Curso/PLOG/Projeto_1/player.pl').
-   :- use_module(library(random)).
+﻿:-use_module(library(lists)).
+:- use_module(library(random)).
+
 symbol(blank, X):- X = ' '.
 symbol(black, X):- X = 'B'.
 symbol(white, X):- X = 'W'.
@@ -35,19 +35,19 @@ initialBoard([
     [corner,wcut,wcut,wcut,wcut,wcut,wcut,wcut,corner],
     [blank,black,black,black,black,black,black,black],
     [bcut,uncut,uncut,uncut,uncut,uncut,uncut,uncut,bcut],
-    [blank,blank,blank,blank,white,blank,blank,blank],
+    [white,blank,white,blank,white,blank,blank,blank],
     [bcut,uncut,uncut,uncut,uncut,uncut,uncut,uncut,bcut],
     [blank,blank,blank,blank,white,blank,blank,blank],
     [bcut,uncut,uncut,uncut,uncut,uncut,uncut,uncut,bcut],
-    [blank,blank,blank,blank,white,blank,blank,blank],
+    [blank,blank,blank,white,white,blank,blank,blank],
     [bcut,uncut,uncut,uncut,uncut,uncut,uncut,uncut,bcut],
-    [blank,blank,blank,blank,white,blank,blank,blank],
+    [blank,white,blank,blank,white,blank,blank,blank],
     [bcut,uncut,uncut,uncut,uncut,uncut,uncut,uncut,bcut],
     [black,black,black,black,black,black,black,blank],
     [bcut,uncut,uncut,uncut,uncut,uncut,uncut,uncut,bcut],
-    [blank,blank,blank,blank,blank,white,white,blank],
+    [blank,white,white,blank,blank,white,white,blank],
     [bcut,uncut,uncut,uncut,uncut,uncut,uncut,wcut,bcut],
-    [blank,blank,blank,blank,blank,blank,blank,white],
+    [white,blank,blank,white,blank,blank,blank,white],
     [corner,wcut,wcut,wcut,wcut,wcut,wcut,wcut,corner]
     ]).
 
@@ -86,7 +86,7 @@ writeBoard(L) :- write(' | |1| |2| |3| |4| |5| |6| |7| |8| |\n'), displayboard(L
 
 
 startBoard :- 
-	initialBoard(T), writeBoard(T).
+	midBoard(T), writeBoard(T).
 	
 
 
@@ -122,6 +122,7 @@ playGame :-
 	write('Incorrect option'), nl, !, playGame)))).
 
 playWhite(T, GotCut, Computer) :-
+	valid_moves(T, 1, [], ListOfMoves),
 	write('White Player Turn ...'), nl, !,
 	(Computer =:= 1 -> 
 		random(1, 9, R1),
@@ -135,11 +136,11 @@ playWhite(T, GotCut, Computer) :-
 	(isCellEmpty(T,TempR1,C1)->
 		replaceBoardCell(T,TempR1,C1,white,Result1),
 		checkSquare(Result1, TempR1, C1, white, Result2, Cut),
-		write('Cut = '), write(Cut), nl,
 		writeBoard(Result2),
 		(checkWhiteVictory(Result2, 2)->
 			write('White wins!!'), fail; write('ok')),
 		(Cut =:= 0 -> (GotCut =:= 1 ->
+				valid_moves(T, 1, [], ListOfMoves),
 				write('White Player Turn ...'), nl, !,
 				(Computer =:= 1 -> 
 					random(1, 9, R2),
@@ -153,8 +154,9 @@ playWhite(T, GotCut, Computer) :-
 				isCellEmpty(Result2,TempR2,C2),
 				replaceBoardCell(Result2,TempR2,C2,white,Result3),
 				checkSquare(Result3, TempR2, C2, white, Result4, Cut),
-				write('Cut = '), write(Cut), nl,
 				writeBoard(Result4),
+				(checkWhiteVictory(Result2, 2)->
+					write('White wins!!'), fail; write('ok')),
 				playBlack(Result4, Cut, Computer);
 
 				playBlack(Result2, Cut, Computer)
@@ -165,6 +167,7 @@ playWhite(T, GotCut, Computer) :-
 		playWhite(T, GotCut, Computer)).
 	
 playBlack(T, GotCut, Computer) :-
+	valid_moves(T, 1, [], ListOfMoves),
 	write('Black Player Turn ...'), nl, !,
 	(Computer =:= 2 -> 
 	random(1, 9, R1),
@@ -178,7 +181,6 @@ playBlack(T, GotCut, Computer) :-
 	(isCellEmpty(T,TempR1,C1)->
 		replaceBoardCell(T,TempR1,C1,black,Result1),
 		checkSquare(Result1, TempR1, C1, black, Result2, Cut),
-		write('Cut = '), write(Cut), nl,
 		writeBoard(Result2),
 		(checkBlackVictory(Result2, 2)->
 		write('Black wins!!'), fail; 
@@ -198,6 +200,7 @@ playBlack(T, GotCut, Computer) :-
 		write('Black wins!!'), fail; 
 		write('ok'))))))))),
 		(Cut =:= 0 -> (GotCut =:= 1 ->
+					valid_moves(T, 1, [], ListOfMoves),
 					write('Black Player Turn ...'), nl, !,
 					(Computer =:= 2 -> 
 					random(1, 9, R2),
@@ -211,8 +214,24 @@ playBlack(T, GotCut, Computer) :-
 					isCellEmpty(Result2,TempR2,C2),
 					replaceBoardCell(Result2,TempR2,C2,black,Result3),
 					checkSquare(Result3, TempR2, C2, black, Result4, Cut),
-					write('Cut = '), write(Cut), nl,
 					writeBoard(Result4),
+					(checkBlackVictory(Result2, 2)->
+						write('Black wins!!'), fail; 
+						(checkBlackVictory(Result2, 4)->
+						write('Black wins!!'), fail; 
+						(checkBlackVictory(Result2, 6)->
+						write('Black wins!!'), fail; 
+						(checkBlackVictory(Result2, 8)->
+						write('Black wins!!'), fail; 
+						(checkBlackVictory(Result2, 10)->
+						write('Black wins!!'), fail; 
+						(checkBlackVictory(Result2, 12)->
+						write('Black wins!!'), fail; 
+						(checkBlackVictory(Result2, 14)->
+						write('Black wins!!'), fail; 
+						(checkBlackVictory(Result2, 16)->
+						write('Black wins!!'), fail; 
+						write('ok'))))))))),
 					playWhite(Result4, Cut, Computer);
 
 					playWhite(Result2, Cut, Computer)
@@ -222,6 +241,47 @@ playBlack(T, GotCut, Computer) :-
 		writeBoard(T),
 		playBlack(T, GotCut, Computer)).
 
+
+
+
+
+% check valid moves
+valid_moves([], _, L, ListOfMoves) :-
+	length(L, S),
+	S>0,
+	ListOfMoves is L.
+
+valid_moves([], _, L, ListOfMoves) :-
+	length(L, S),
+	S = 0,
+	write('Tie'),
+	fail.
+
+
+valid_moves([H|T], Row, L, ListOfMoves) :-
+	Row mod 2 =:= 0,
+	checkForBlanks(H, Row, 1, [], Moves),
+	append(L, Moves, L1),
+	R is Row+1,
+	valid_moves(T, R, L1, ListOfMoves).
+
+valid_moves([H|T], Row, L, ListOfMoves) :-
+	R is Row+1,
+	valid_moves(T, R, L, ListOfMoves).
+
+
+checkForBlanks([], _, _, X, X).
+
+checkForBlanks([H|T], Row, Col, L, Moves) :-
+	H = blank,
+	append([Row], [Col], J),
+	append(L, [J], L1),
+	C is Col+1,
+	checkForBlanks(T, Row, C, L1, Moves).
+
+checkForBlanks([H|T], Row, Col, L, Moves) :-
+	C is Col+1,
+	checkForBlanks(T, Row, C, L, Moves).
 
 
 % checks if position is empty %
