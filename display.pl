@@ -215,10 +215,16 @@ playBlack(T, GotCut, Computer, Dificulty) :-
 		playBlack(T, GotCut, Computer, Dificulty)).
 
 
+
+
+% In mode 0 => pvp, just needs to read input
+
 playBlackBot(Board, R1, C1, 0, _):-
 		write('Row = '), read(TempR1), 
 		write('Column = '), read(C1),
 		R1 is TempR1*2.	
+
+% In mode 1 => pVc, lvl1, just needs to calculate random values for row & col
 
 playBlackBot(Board, R1, C1, 1, 1):-
 	random(1, 9, TempR1),
@@ -226,12 +232,15 @@ playBlackBot(Board, R1, C1, 1, 1):-
 	R1 is TempR1*2.
 
 
+% In mode 2 => cVp, black just needs to read input
+
 playBlackBot(Board, R1, C1, 2, _):-
 	write('Row = '), read(TempR1), 
 	write('Column = '), read(C1),
 	R1 is TempR1*2.	
 
 
+% In mode 3 => cVc, lvl1, needs to calculate random values for row & col
 
 playBlackBot(Board, R1, C1, 3, 1):-
 	random(1, 9, TempR1),
@@ -239,6 +248,7 @@ playBlackBot(Board, R1, C1, 3, 1):-
 	R1 is TempR1*2.
 
 
+% In mode 1 => pVc, lvl2, needs to calculate most valuable move for row & col
 
 playBlackBot(Board, R1, C1, 1, 2):-
 	random(1, 9, C1),
@@ -268,6 +278,8 @@ playHardBlackBot(Board, R1, N, Max_n, A):-
 
 	
 
+%	same as black bot, but modes 2 & 3 equivalent to 1 & 2, respectively
+
 playWhiteBot(Board, R1, C1, 0, _):-
 	write('Row = '), read(TempR1), 
 	write('Column = '), read(C1),
@@ -296,6 +308,9 @@ playWhiteBot(Board, R1, C1, 2, 2):-
 	playHardBot(Board, 2, R1, C1).
 
 
+
+%tries to build a full vertical line in order to win
+%not finished nor fully functional
 
 playHardBot(_, 18, R1, C1):- random(1, 9, C1), R1 is 2.
 playHardBot(Board, N, R1, C1):-	
@@ -611,7 +626,7 @@ checkSquare(Board, R, C, X, Result, Cut) :-
 	(G = 1 -> Cut is 1; (H = 1 -> Cut is 1; (J = 1 -> Cut is 1; (K = 1 -> Cut is 1; Cut is 0)))).
 
 	
-% Check Victory Condition %
+% Check White Victory Condition %
 
 checkWhiteVictory(_, 18, _).
 checkWhiteVictory(Board, N) :-
@@ -624,6 +639,8 @@ checkWhiteVictory(Board, N) :-
 	Temp4 is N+1,
 %	Temp5 is N-1,
 	
+
+	%	Now checks the adjacent squares to verify the path
 replaceBoardCell(Board, N, Y, white_c, Result),
 
 	(checkWhiteVictory(Board, Temp3, Y)->
@@ -656,6 +673,7 @@ checkWhiteVictory(Board, N, Y) :-
 	Temp4 is N+1,
 
 	(Piece = white ->
+	%	Now checks the adjacent squares to verify the path
 	
 	replaceBoardCell(Board, N, Y, white_c, Result),
 	(checkWhiteVictory(Result, Temp3, Y)->
@@ -682,6 +700,11 @@ checkWhiteVictory(Board, N, Y) :-
 %  checkBlackVictory(_, _, 9).
 
 % checkBlackVictory(_, 16):- fail.
+
+
+
+%Set of functions to verify if black player won
+
 checkBlackVictory(Board, N) :-
 
 		% transpose(Board, Board1),
