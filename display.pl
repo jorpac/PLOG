@@ -129,15 +129,7 @@ play:-
 playWhite(T, GotCut, Computer, Dificulty) :-
 	valid_moves(T, 1, [], ListOfMoves),
 	write('White Player Turn ...'), nl, !,
-	(Computer =:= 1 -> 
-		random(1, 9, R1),
-		random(1, 9, C1);
-	(Computer =:= 3 -> 
-		random(1, 9, R1),
-		random(1, 9, C1);
-	write('Row = '), read(R1), 
-	write('Column = '), read(C1))),
-	TempR1 is R1*2,
+	playWhiteBot(Board, TempR1, C1, Computer, Dificulty),
 	(isCellEmpty(T,TempR1,C1)->
 		replaceBoardCell(T,TempR1,C1,white,Result1),
 		checkSquare(Result1, TempR1, C1, white, Result2, Cut),
@@ -147,15 +139,7 @@ playWhite(T, GotCut, Computer, Dificulty) :-
 		(Cut =:= 0 -> (GotCut =:= 1 ->
 				valid_moves(T, 1, [], ListOfMoves),
 				write('White Player Turn ...'), nl, !,
-				(Computer =:= 1 -> 
-					random(1, 9, R2),
-					random(1, 9, C2);
-					(Computer =:= 3 -> 
-					random(1, 9, R2),
-					random(1, 9, C2);
-					write('Row = '), read(R2), 
-					write('Column = '), read(C2))),
-				TempR2 is R2*2,
+				playWhiteBot(Board, TempR2, C2, Computer, Dificulty),
 				isCellEmpty(Result2,TempR2,C2),
 				replaceBoardCell(Result2,TempR2,C2,white,Result3),
 				checkSquare(Result3, TempR2, C2, white, Result4, Cut),
@@ -174,16 +158,8 @@ playWhite(T, GotCut, Computer, Dificulty) :-
 playBlack(T, GotCut, Computer, Dificulty) :-
 	valid_moves(T, 1, [], ListOfMoves),
 	write('Black Player Turn ...'), nl, !,
-	(Computer =:= 2 -> 
-		playBlackBot(Board, R1, C1, Dificulty),
-		TempR1 is R1;	
-	(Computer =:= 3 -> 
-		playBlackBot(Board, R1, C1, Dificulty),
-		TempR1 is R1;
-	write('Row = '), read(R1), 
-	write('Column = '), read(C1),
-	TempR1 is R1*2)),
-	(isCellEmpty(T,TempR1,C1)->
+	playBlackBot(Board, TempR1, C1, Computer, Dificulty),
+(isCellEmpty(T,TempR1,C1)->
 		replaceBoardCell(T,TempR1,C1,black,Result1),
 		checkSquare(Result1, TempR1, C1, black, Result2, Cut),
 		writeBoard(Result2),
@@ -207,15 +183,7 @@ playBlack(T, GotCut, Computer, Dificulty) :-
 		(Cut =:= 0 -> (GotCut =:= 1 ->
 					valid_moves(T, 1, [], ListOfMoves),
 					write('Black Player Turn ...'), nl, !,
-					(Computer =:= 2 -> 
-					random(1, 9, R2),
-					random(1, 9, C2);
-					(Computer =:= 3 -> 
-					random(1, 9, R2),
-					random(1, 9, C2);
-					write('Row = '), read(R2), 
-					write('Column = '), read(C2))),
-					TempR2 is R2*2,
+					playBlackBot(Board, TempR2, C2, Computer, Dificulty),
 					isCellEmpty(Result2,TempR2,C2),
 					replaceBoardCell(Result2,TempR2,C2,black,Result3),
 					checkSquare(Result3, TempR2, C2, black, Result4, Cut),
@@ -247,16 +215,41 @@ playBlack(T, GotCut, Computer, Dificulty) :-
 		playBlack(T, GotCut, Computer, Dificulty)).
 
 
-playBlackBot(Board, R1, C1, 1):-
-	random(1, 9, R1),
-	random(1, 9, C1).
+playBlackBot(Board, R1, C1, 0, _):-
+		write('Row = '), read(TempR1), 
+		write('Column = '), read(C1),
+		R1 is TempR1*2.	
 
-playBlackBot(Board, R1, C1, 2):-
+playBlackBot(Board, R1, C1, 1, 1):-
+	random(1, 9, TempR1),
 	random(1, 9, C1),
-	playBlackBot(Board, R1, 0, 2, 100).	
+	R1 is TempR1*2.
 
-playBlackBot(_, R1, 18, Max_n, _):-R1 is Max_n.
-playBlackBot(Board, R1, N, Max_n, A):-
+
+playBlackBot(Board, R1, C1, 2, _):-
+	write('Row = '), read(TempR1), 
+	write('Column = '), read(C1),
+	R1 is TempR1*2.	
+
+
+
+playBlackBot(Board, R1, C1, 3, 1):-
+	random(1, 9, TempR1),
+	random(1, 9, C1),
+	R1 is TempR1*2.
+
+
+
+playBlackBot(Board, R1, C1, 1, 2):-
+	random(1, 9, C1),
+	playHardBlackBot(Board, R1, 0, 2, 100).	
+
+playBlackBot(Board, R1, C1, 3, 2):-
+		random(1, 9, C1),
+		playHardBlackBot(Board, R1, 0, 2, 100).	
+	
+playHardBlackBot(_, R1, 18, Max_n, _):-R1 is Max_n.
+playHardBlackBot(Board, R1, N, Max_n, A):-
 	N1 is N + 2,
 	nth1(N1, Board, Row),
 	
@@ -266,16 +259,64 @@ playBlackBot(Board, R1, N, Max_n, A):-
 	% subtract(Row, white, Row),
 	length(Row1, Y),
 	(Y < A->
-		(member(blank, Row1)->
-		playBlackBot(Board, N1, N1, N1, Y); 
+		(member(blank, Row)->
+		playHardBlackBot(Board, N1, N1, N1, Y); 
 		R1 is 6,
 		true);
-		playBlackBot(Board, R1, N1, Max_n, A));
-	playBlackBot(Board, R1, N1, Max_n, A)).
+		playHardBlackBot(Board, R1, N1, Max_n, A));
+		playHardBlackBot(Board, R1, N1, Max_n, A)).
 
 	
-	
-	
+
+playWhiteBot(Board, R1, C1, 0, _):-
+	write('Row = '), read(TempR1), 
+	write('Column = '), read(C1),
+	R1 is TempR1*2.	
+
+
+playWhiteBot(Board, R1, C1, 1, _):-
+	write('Row = '), read(TempR1), 
+	write('Column = '), read(C1),
+	R1 is TempR1*2.	
+
+
+
+playWhiteBot(Board, R1, C1, 2, 1):-
+	random(1, 9, TempR1),
+	random(1, 9, C1),
+	R1 is TempR1*2.
+
+playWhiteBot(Board, R1, C1, 3, _):-
+	random(1, 9, TempR1),
+	random(1, 9, C1),
+	R1 is TempR1*2.
+
+
+playWhiteBot(Board, R1, C1, 2, 2):-
+	playHardBot(Board, 2, R1, C1).
+
+
+
+playHardBot(_, 18, R1, C1):- random(1, 9, C1), R1 is 2.
+playHardBot(Board, N, R1, C1):-	
+	nth1(N, Board, Row),
+	(member(white, Row)->
+		nth1(Y, Row, white),
+		R1 is N+2,
+		(isCellEmpty(Board, R1, Y)->
+			C1 is Y;
+			C1 is Y+2);
+	N1 is N + 2,
+	playHardBot(Board, N1, R1, C1)).
+
+
+
+
+
+
+
+
+
 
 % check valid moves
 valid_moves([], _, L, ListOfMoves) :-
