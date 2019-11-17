@@ -46,7 +46,7 @@ initialBoard([
     [black,black,black,black,black,black,black,blank],
     [bcut,uncut,uncut,uncut,uncut,uncut,uncut,uncut,bcut],
     [blank,white,white,blank,blank,white,white,blank],
-    [bcut,uncut,uncut,uncut,uncut,uncut,uncut,wcut,bcut],
+    [bcut,wcut,uncut,wcut,uncut,uncut,uncut,wcut,bcut],
     [white,blank,blank,white,blank,blank,blank,white],
     [corner,wcut,wcut,wcut,wcut,wcut,wcut,wcut,corner]
     ]).
@@ -86,13 +86,13 @@ writeBoard(L) :- write(' | |1| |2| |3| |4| |5| |6| |7| |8| |\n'), displayboard(L
 
 
 startBoard :- 
-	midBoard(T), writeBoard(T).
+	midBoard(T), writeBoard(T), valid_moves(T, 1, [], ListOfMoves).
 	
 
 
 
 
-playGame :- 
+play:- 
 	initialBoard(Board),
 
 	write(' -------------------------'),nl,!,
@@ -107,21 +107,26 @@ playGame :-
 	read(Mode),
 	(Mode =:= 0->
 	writeBoard(Board),
-	playWhite(Board, 0, 0);
+	playWhite(Board, 0, 0, 0);
+	(Mode =:= 99->
+	fail;
+	write('Please insert computer mode:'), nl, !,
+	write('1-> Computer lvl 1'), nl, !,
+	write('2-> Computer lvl 2'), nl, !,
+	read(Dificulty),
 	(Mode =:= 1->
 	writeBoard(Board),
-	playWhite(Board, 0, 1);
+	playWhite(Board, 0, 1, Dificulty);
 	(Mode =:= 2->
 	writeBoard(Board),
-	playWhite(Board, 0, 2);
+	playWhite(Board, 0, 2, Dificulty);
 	(Mode =:= 3->
 	writeBoard(Board),
-	playWhite(Board, 0, 3);
-	(Mode =:= 99->
-	fail);
+	playWhite(Board, 0, 3, Dificulty));
+	
 	write('Incorrect option'), nl, !, playGame)))).
 
-playWhite(T, GotCut, Computer) :-
+playWhite(T, GotCut, Computer, Dificulty) :-
 	valid_moves(T, 1, [], ListOfMoves),
 	write('White Player Turn ...'), nl, !,
 	(Computer =:= 1 -> 
@@ -157,27 +162,27 @@ playWhite(T, GotCut, Computer) :-
 				writeBoard(Result4),
 				(checkWhiteVictory(Result2, 2)->
 					write('White wins!!'), fail; write('ok')),
-				playBlack(Result4, Cut, Computer);
+				playBlack(Result4, Cut, Computer, Dificulty);
 
-				playBlack(Result2, Cut, Computer)
+				playBlack(Result2, Cut, Computer, Dificulty)
 			);
-		playBlack(Result2, Cut, Computer));
+		playBlack(Result2, Cut, Computer, Dificulty));
 		write('Cell is not empty. Try again w/ empty cell'), nl,
 		writeBoard(T),
-		playWhite(T, GotCut, Computer)).
+		playWhite(T, GotCut, Computer, Dificulty)).
 	
-playBlack(T, GotCut, Computer) :-
+playBlack(T, GotCut, Computer, Dificulty) :-
 	valid_moves(T, 1, [], ListOfMoves),
 	write('Black Player Turn ...'), nl, !,
 	(Computer =:= 2 -> 
-	random(1, 9, R1),
-	random(1, 9, C1);
+		playBlackBot(Board, R1, C1, Dificulty),
+		TempR1 is R1;	
 	(Computer =:= 3 -> 
-		random(1, 9, R1),
-		random(1, 9, C1);
+		playBlackBot(Board, R1, C1, Dificulty),
+		TempR1 is R1;
 	write('Row = '), read(R1), 
-	write('Column = '), read(C1))),
-	TempR1 is R1*2,
+	write('Column = '), read(C1),
+	TempR1 is R1*2)),
 	(isCellEmpty(T,TempR1,C1)->
 		replaceBoardCell(T,TempR1,C1,black,Result1),
 		checkSquare(Result1, TempR1, C1, black, Result2, Cut),
@@ -232,24 +237,51 @@ playBlack(T, GotCut, Computer) :-
 						(checkBlackVictory(Result2, 16)->
 						write('Black wins!!'), fail; 
 						write('ok'))))))))),
-					playWhite(Result4, Cut, Computer);
+					playWhite(Result4, Cut, Computer, Dificulty);
 
-					playWhite(Result2, Cut, Computer)
+					playWhite(Result2, Cut, Computer, Dificulty)
 			);
-			playWhite(Result2, Cut, Computer));
+			playWhite(Result2, Cut, Computer, Dificulty));
 		write('Cell is not empty. Try again w/ empty cell'), nl,
 		writeBoard(T),
-		playBlack(T, GotCut, Computer)).
+		playBlack(T, GotCut, Computer, Dificulty)).
 
 
+playBlackBot(Board, R1, C1, 1):-
+	random(1, 9, R1),
+	random(1, 9, C1).
 
+playBlackBot(Board, R1, C1, 2):-
+	random(1, 9, C1),
+	playBlackBot(Board, R1, 0, 2, 100).	
 
+playBlackBot(_, R1, 18, Max_n, _):-R1 is Max_n.
+playBlackBot(Board, R1, N, Max_n, A):-
+	N1 is N + 2,
+	nth1(N1, Board, Row),
+	
+	(member(black, Row)->
+	
+	delete(Row, black, Row1),
+	% subtract(Row, white, Row),
+	length(Row1, Y),
+	(Y < A->
+		(member(blank, Row1)->
+		playBlackBot(Board, N1, N1, N1, Y); 
+		R1 is 6,
+		true);
+		playBlackBot(Board, R1, N1, Max_n, A));
+	playBlackBot(Board, R1, N1, Max_n, A)).
+
+	
+	
+	
 
 % check valid moves
 valid_moves([], _, L, ListOfMoves) :-
 	length(L, S),
 	S>0,
-	ListOfMoves is L.
+	ListOfMoves = L.
 
 valid_moves([], _, L, ListOfMoves) :-
 	length(L, S),
@@ -262,11 +294,11 @@ valid_moves([H|T], Row, L, ListOfMoves) :-
 	Row mod 2 =:= 0,
 	checkForBlanks(H, Row, 1, [], Moves),
 	append(L, Moves, L1),
-	R is Row+1,
+	R = Row+1,
 	valid_moves(T, R, L1, ListOfMoves).
 
 valid_moves([H|T], Row, L, ListOfMoves) :-
-	R is Row+1,
+	R = Row+1,
 	valid_moves(T, R, L, ListOfMoves).
 
 
@@ -276,11 +308,11 @@ checkForBlanks([H|T], Row, Col, L, Moves) :-
 	H = blank,
 	append([Row], [Col], J),
 	append(L, [J], L1),
-	C is Col+1,
+	C = Col+1,
 	checkForBlanks(T, Row, C, L1, Moves).
 
 checkForBlanks([H|T], Row, Col, L, Moves) :-
-	C is Col+1,
+	C = Col+1,
 	checkForBlanks(T, Row, C, L, Moves).
 
 
