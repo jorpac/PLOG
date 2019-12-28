@@ -3,7 +3,7 @@
 
 :-dynamic(farmacia/5).
 :-dynamic(distTime/1).
-farmacia(+Name, +Id, +Volume_Encomenda, +HoraInicio, +HoraFim).
+%farmacia(+Name, +Id, +Volume_Encomenda, +HoraInicio, +HoraFim).
 farmacia("Sede", 0, 0, 10, 22).
 farmacia("Farm1", 1, 10, 10, 22).
 farmacia("Farm2", 2, 40, 10, 22).

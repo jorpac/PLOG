@@ -5,29 +5,6 @@
 :-abolish(distTime/1).
 
 
-diff:-    
-    write('Welcome to DIFF optimization program.'), nl,
-    write('Select problem dimension:'), nl,
-    write(' 1->Small Problem (5 farmacies)'), nl,
-    write(' 2-> Big Problem(20 farmacies)'), nl,
-    read(Dimension),
-    Dimension = 1, !, 
-    
-    write('Enter available vans:'), nl,
-    read(NVans),
-    consult('farmacias_1.pl'),
-    minDist(NVans,Farmacies, D).
-
-diff:-
-    Dimension = 2, !,
-    write('Enter available vans:'), nl,
-    read(NVans),
-    consult('farmacias_2.pl'),
-    minDist(NVans,Farmacies, D).
- 
-
-% Cenas a optimizar: nº carrinhas; dist/carrinha
-
 
 %farmacia(+Name, +Id, +Volume_Encomenda, +HoraInicio, +HoraFim).
 %farmacia("Sede", 0, 0, 10, 22).
@@ -49,6 +26,29 @@ diff:-
 %    28, 43, 26, 60, 42,  0
 %]).
 
+diff:-    
+    write('Welcome to DIFF optimization program.'), nl,
+    write('Select problem dimension:'), nl,
+    write(' 1-> Small Problem (5 farmacies)'), nl,
+    write(' 2-> Medium Problem(10 farmacies)'), nl,
+    write(' 3-> Big Problem(15 farmacies)'), nl,
+    read(Dimension),
+    write('Enter available vans:'), nl,
+    read(NVans),
+    Dimension = 1, !, 
+    consult('farmacias_1.pl'),
+    minDist(NVans,Farmacies, D).
+
+diff:-
+    (Dimension = 2 ->
+    consult('farmacias_2.pl'), !;
+    consult('farmacias_3.pl'), !),
+    minDist(NVans,Farmacies, D).
+
+
+
+% Cenas a optimizar: nº carrinhas; dist/carrinha
+
 % Minimizar distancia percorrida
 minDist(NVans, Farmacies, D) :-
 	distTime(BigList),
@@ -63,8 +63,6 @@ minDist(NVans, Farmacies, D) :-
 	getTotalDist(BigList, Farmacies, D, N),
 
 	labeling([minimize(D)], Farmacies), write(Farmacies), write(' - '), write(D), nl, fail.
-
-
 
 
 
