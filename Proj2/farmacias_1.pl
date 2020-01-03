@@ -24,6 +24,30 @@ distTime([
 ]).
     
         
-    
-    
+%    
+%optMinDist(NVans, Farmacies, End):-
+%    NVans = 3,!,
+%	distTime(BigList),
+%    getFarmacies(N),
+%    N = 6, !,
+%    length(Farmacies, N),
+%    domain(Farmacies, 0, N),
+%    Ss = [S1, S2, S3, S4, S5],
+%    Es = [E1, E2, E3, E4, E5],
+%
+%   
+%
+%    Tasks=[
+%        task(S1, 20, E1, 1),
+%        task(S2, 2, E2, 1),
+%        task(S2, 3, E3, 1),
+%        task(S3, 21, E4, 1),
+%        task(S4, 42, E5, 1)
+%    ],
+%    domain(Ss, 0, 400),
+%    maximum(End, Es),
+%    cumulative(Tasks, [limit(1)]),
+%    labeling([minimize(End)], Ss).
+%
+%    
     
