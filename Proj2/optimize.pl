@@ -21,7 +21,7 @@ diff:-
     read(NVans),
 	getFarmacies(NFarm),
 	%optMinDist(NVans, _, _).
-	(NVans >= NFarm -> minDist(NFarm); (NVans = 1 -> minDist(1); minDist(NVans))).
+	(NVans >= NFarm -> minDist(NFarm); (NVans = 1 -> minDist(1); minDist(NVans, NFarm))).
 
 
 % Minimizar distancia percorrida
@@ -37,17 +37,49 @@ minDist(1) :-
 	labeling([minimize(D)], Farmacies), write(Farmacies), write(' - '), write(D).
 
 
-minDist(NVans) :-
-	getFarmacies(NFarm),
-	NFarm = 6,
-	distTime(BigList),
+minDist(NVans, NFarm) :-
+	% getFarmacies(NFarm),
+	% NFarm = 6,
+	% distTime(BigList),
 
-	List = [L1, L2, L3, L4, L5],
-	domain(List, 1, NVans),
+	% List = [L1, L2, L3, L4, L5],
+	% domain(List, 1, NVans),
 
-	Ss = [S1, S2, S3, S4, S5],
-	Es = [E1, E2, E3, E4, E5],
+	% Ss = [S1, S2, S3, S4, S5],
+	% Es = [E1, E2, E3, E4, E5],
     
+	% element(2, BigList, A),
+    % element(3, BigList, B),
+    % element(4, BigList, C),
+    % element(5, BigList, D),
+    % element(6, BigList, E),
+
+    % AA #= A + A + 30,
+    % BB #= B + B + 30,
+    % CC #= C + C + 30,
+    % DD #= D + D + 30,
+    % EE #= E + E + 30,
+
+	% Tasks = [
+	% 	task(S1, AA, E1, 1, L1),
+	% 	task(S2, BB, E2, 1, L2),
+	% 	task(S3, CC, E3, 1, L3),
+	% 	task(S4, DD, E4, 1, L4),
+	% 	task(S5, EE, E5, 1, L5)
+	% ],
+	
+    % Machines=[machine(1, 1), machine(2, 1), machine(3, 1)],
+	% domain(Ss, 0, 720),
+    % maximum(End, Es),
+	% End #=< 720,
+
+	
+	% cumulatives(Tasks, Machines, [bound(upper)]),
+    % labeling([], Ss), labeling([minimize(End)], List), write(End), write(Ss), write(List), fail.
+    NFarm = 6,!,
+    distTime(BigList),
+    List = [M1, M2, M3, M4, M5],
+	domain(List, 1, NVans),
 	element(2, BigList, A),
     element(3, BigList, B),
     element(4, BigList, C),
@@ -60,25 +92,42 @@ minDist(NVans) :-
     DD #= D + D + 30,
     EE #= E + E + 30,
 
-	Tasks = [
-		task(S1, AA, E1, 1, L1),
-		task(S2, BB, E2, 1, L2),
-		task(S3, CC, E3, 1, L3),
-		task(S4, DD, E4, 1, L4),
-		task(S5, EE, E5, 1, L5)
-	],
-	
-	getMachines(NVans, 1, [], Machines),
+    Ss = [S1, S2, S3, S4, S5],
+    Es = [E1, E2, E3, E4, E5],
+    Tasks = [
+        task(S1, 15, E1, AA, M1),
+        task(S2, 15, E2, BB, M2),
+        task(S3, 15, E3, CC, M3),
+        task(S4, 15, E4, DD, M4),
+        task(S5, 15, E5, EE, M5)
 
-	domain(Ss, 0, 720),
+    ],
+
+	domain(Ss, 0, 30),
     maximum(End, Es),
-	End #=< 720,
+	End #=< 30,
 
-	
+    Machines=[machine(1, 720), machine(2, 720), machine(3, 720)],
+    cumulatives(Tasks, Machines, [bound(upper)]),
+    Ss1 = [S11, S12, S13, S14, S15],
+    Es1 = [E11, E12, E13, E14, E15],
 
-	cumulatives(Tasks, Machines, [bound(upper)]),
-	labeling([ff], List),
-    labeling([minimize(End)], Ss), write(End), write(Ss), write(List), fail.
+    Tasks1 = [
+        task(S11, AA, E11, 15, M1),
+        task(S12, BB, E12, 15, M2),
+        task(S13, CC, E13, 15, M3),
+        task(S14, DD, E14, 15, M4),
+        task(S15, EE, E15, 15, M5)
+    ],
+
+
+	domain(Ss1, 0, 720),
+    maximum(End1, Es1),
+	End1 #=< 720,
+
+    %Machines=[machine(1, 720), machine(2, 720), machine(3, 720)],
+    cumulatives(Tasks1, Machines, [bound(upper)]),
+    labeling([], List), labeling([minimize(End1)], Ss1),  write(End1), write(List), fail.
 
 
 
@@ -137,8 +186,8 @@ minDist(NVans) :-
 	End #=< 720,
 
 	cumulatives(Tasks, Machines, [bound(upper)]),
-	labeling([], List),
-    labeling([], Ss), write(End), write(Ss).
+	
+    labeling([minimize(End)], [Ss, List]), write(End), write(Ss).
 
 
 
